@@ -43,10 +43,11 @@
         credentials: new AWS.Credentials(
             "API_KEY",
             "SECRET"
-        ),
-        // region: "ap-northeast-1"
+        )
     });
     var serviceList = [];
+    // URLのPathからサービスを取得
+    var serviceName = location.pathname.split('/')[1];
 
     regionList.forEach(targetRegion => {
         console.log(targetRegion)
@@ -55,9 +56,9 @@
         });
         var tagging = new AWS.ResourceGroupsTaggingAPI();
         var params = {
-             ResourceTypeFilters: [location.pathname.split('/')[1]],
-             IncludeComplianceDetails: false 
-            };  // URLのPathからサービスを取得
+            ResourceTypeFilters: [serviceName],
+            IncludeComplianceDetails: false
+        };
         tagging.getResources(params, function (err, data) {
             if (err) {
                 // リージョンによってはリソースを取得できない。
