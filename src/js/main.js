@@ -39,39 +39,40 @@
         'sa-east-1'
     ]
 
-    AWS.config.update({
-        credentials: new AWS.Credentials(
-            "API_KEY",
-            "SECRET"
-        )
-    });
-    var serviceList = [];
-    // URLのPathからサービスを取得
-    var serviceName = location.pathname.split('/')[1];
-
-    regionList.forEach(targetRegion => {
-        console.log(targetRegion)
+    chrome.storage.sync.get(["api_key", "secret_key"], function (input) {
         AWS.config.update({
-            region: targetRegion
+            credentials: new AWS.Credentials(
+                input.api_key,
+                input.secret_key
+            )
         });
-        var tagging = new AWS.ResourceGroupsTaggingAPI();
-        var params = {
-            ResourceTypeFilters: [serviceName],
-            IncludeComplianceDetails: false
-        };
-        tagging.getResources(params, function (err, data) {
-            if (err) {
-                // リージョンによってはリソースを取得できない。
-            } else {
-                serviceList.push(...data.ResourceTagMappingList);
+
+        var serviceList = [];
+        // URLのPathからサービスを取得
+        var serviceName = location.pathname.split('/')[1];
+
+        regionList.forEach(targetRegion => {
+            AWS.config.update({
+                region: targetRegion
+            });
+            var tagging = new AWS.ResourceGroupsTaggingAPI();
+            var params = {
+                ResourceTypeFilters: [serviceName],
+                IncludeComplianceDetails: false
+            };
+            tagging.getResources(params, function (err, data) {
+                if (err) {
+                    // リージョンによってはリソースを取得できない。
+                } else {
+                    serviceList.push(...data.ResourceTagMappingList);
+                }
+            });
+        });
+        let vm = new Vue({
+            el: "#vue-app",
+            data: {
+                serviceList: serviceList
             }
         });
-    });
-
-    let vm = new Vue({
-        el: "#vue-app",
-        data: {
-            serviceList: serviceList
-        }
     });
 })();
