@@ -8,3 +8,5 @@
 
 AWSのIAMユーザーを作成し、APIキーとシークレットを取得する。
 ユーザーには「ResourceGroupsandTagEditorReadOnlyAccess」のポリシーをアタッチする。
+
+拡張機能のオプションから、APIキーとシークレットを設定する。
